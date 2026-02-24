@@ -1,4 +1,4 @@
-package it.unibas.progettosensori;
+package it.unibas.tav.progettosensori;
 
 public class App {
     public String getGreeting() {
