@@ -1,5 +1,9 @@
-package it.unibas.tav.progettosensori.modello;
+package it.unibas.tav.progettosensori.modello.sensore;
 
-public interface ISensore {
+public abstract class SensoreBase {
 
+    private int id;
+    private String nome;
+    private String unitaMisura;
+    private double valore;
 }
