@@ -1,4 +1,4 @@
-package it.unibas.tav.progettosensori;
+package it.unibas.tav.iotsentinel;
 
 public class App {
     public String getGreeting() {
