@@ -12,6 +12,7 @@ group = "it.unibas.tav.iotsentinel"
 version = "1.0.0-SNAPSHOT"
 
 dependencies {
+    implementation("io.quarkus:quarkus-smallrye-openapi")
     implementation(enforcedPlatform("io.quarkus.platform:quarkus-bom:3.32.3"))
 
     compileOnly("org.projectlombok:lombok:1.18.42")

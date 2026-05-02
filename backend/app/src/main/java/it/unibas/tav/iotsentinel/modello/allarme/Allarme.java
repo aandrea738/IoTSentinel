@@ -38,4 +38,10 @@ public class Allarme {
     private EStatoAllarme stato;
 
     private Instant timestampInizio;
+
+    private Instant timestampFine;
+
+    private String descrizione;
+
+    private long occorrenze;
 }

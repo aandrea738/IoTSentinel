@@ -8,10 +8,27 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY,
+    property = "tipo"
+)
+@JsonSubTypes({
+    @JsonSubTypes.Type(value = SensoreTemperatura.class, name = "TEMPERATURA"),
+    @JsonSubTypes.Type(value = SensorePressione.class, name = "PRESSIONE"),
+    @JsonSubTypes.Type(value = SensoreVibrazione.class, name = "VIBRAZIONE"),
+    @JsonSubTypes.Type(value = SensoreCO2.class, name = "CO2")
+})
 public abstract class SensoreBase implements ISensore {
 
     @Id
