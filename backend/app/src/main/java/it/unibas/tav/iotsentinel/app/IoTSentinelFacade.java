@@ -13,8 +13,8 @@ import it.unibas.tav.iotsentinel.modello.motore.MotoreAnalisi;
 import it.unibas.tav.iotsentinel.modello.regola.IRegola;
 import it.unibas.tav.iotsentinel.modello.sensore.EStatoSensore;
 import it.unibas.tav.iotsentinel.modello.sensore.SensoreBase;
-import it.unibas.tav.iotsentinel.persistenza.codamisurazioni.CodaMisurazioniSql;
-import it.unibas.tav.iotsentinel.persistenza.misurazione.DAOTelemetrieSql;
+import it.unibas.tav.iotsentinel.persistenza.codamisurazioni.ICodaMisurazioni;
+import it.unibas.tav.iotsentinel.persistenza.misurazione.IDAOTelemetrie;
 import it.unibas.tav.iotsentinel.persistenza.regola.DAORegole;
 import it.unibas.tav.iotsentinel.persistenza.sensore.IDAOSensore;
 import jakarta.annotation.PostConstruct;
@@ -32,13 +32,13 @@ public class IoTSentinelFacade {
     IDAOSensore daoSensore;
 
     @Inject
-    CodaMisurazioniSql codaMisurazioni;
+    ICodaMisurazioni codaMisurazioni;
 
     @Inject
     DAORegole daoRegole;
 
     @Inject
-    DAOTelemetrieSql daoTelemetrie;
+    IDAOTelemetrie daoTelemetrie;
 
     @Inject
     Instance<IAlarmObserver> observerInstances;

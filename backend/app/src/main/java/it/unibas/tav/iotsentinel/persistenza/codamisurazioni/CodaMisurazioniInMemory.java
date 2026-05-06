@@ -2,6 +2,8 @@ package it.unibas.tav.iotsentinel.persistenza.codamisurazioni;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import it.unibas.tav.iotsentinel.modello.misurazione.Misurazione;
@@ -15,7 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CodaMisurazioniInMemory implements ICodaMisurazioni {
 
-    private List<Misurazione> misurazioni = new ArrayList<>();
+    private Queue<Misurazione> misurazioni = new ConcurrentLinkedQueue<>();
 
     @Override
     public void push(Misurazione misurazione) {
@@ -26,10 +28,17 @@ public class CodaMisurazioniInMemory implements ICodaMisurazioni {
 
     @Override
     public Misurazione pop() {
-        if (misurazioni.isEmpty()) {
-            return null;
+        return misurazioni.poll();
+    }
+
+    @Override
+    public List<Misurazione> popBatch(int maxResults) {
+        List<Misurazione> batch = new ArrayList<>();
+        Misurazione m;
+        while (batch.size() < maxResults && (m = misurazioni.poll()) != null) {
+            batch.add(m);
         }
-        return misurazioni.remove(0);
+        return batch;
     }
 
     @Override
@@ -39,5 +48,16 @@ public class CodaMisurazioniInMemory implements ICodaMisurazioni {
                         && m.getSensore() instanceof SensoreBase sb
                         && sb.getId() == idSensore)
                 .collect(Collectors.toList());
+    }
+
+    public List<Misurazione> getMisurazioni() {
+        return new ArrayList<>(misurazioni);
+    }
+
+    public void setMisurazioni(List<Misurazione> misurazioni) {
+        this.misurazioni = new ConcurrentLinkedQueue<>();
+        if (misurazioni != null) {
+            this.misurazioni.addAll(misurazioni);
+        }
     }
 }

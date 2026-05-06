@@ -9,5 +9,7 @@ public interface ICodaMisurazioni {
 
     Misurazione pop();
 
+    List<Misurazione> popBatch(int maxResults);
+
     List<Misurazione> findByIdSensore(int idSensore);
 }
