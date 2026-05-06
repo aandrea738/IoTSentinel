@@ -28,6 +28,19 @@ public class DAOSensoreSql implements IDAOSensore {
     }
 
     @Override
+    public SensoreBase findBySeriale(String seriale) throws DAOException {
+        try {
+            List<SensoreBase> results = em.createQuery("SELECT s FROM SensoreBase s WHERE s.seriale = :seriale", SensoreBase.class)
+                    .setParameter("seriale", seriale)
+                    .getResultList();
+            return results.isEmpty() ? null : results.get(0);
+        } catch (Exception ex) {
+            log.error("Error finding sensor by serial", ex);
+            throw new DAOException(ex);
+        }
+    }
+
+    @Override
     public List<SensoreBase> findAll() throws DAOException {
         try {
             return em.createQuery("SELECT s FROM SensoreBase s", SensoreBase.class).getResultList();

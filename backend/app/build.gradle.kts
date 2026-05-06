@@ -20,6 +20,7 @@ dependencies {
 
 
     implementation("io.quarkus:quarkus-rest-jackson")
+    implementation("io.quarkus:quarkus-scheduler")
     implementation("io.quarkus:quarkus-hibernate-orm-panache")
     implementation("io.quarkus:quarkus-jdbc-postgresql")
 

@@ -7,11 +7,12 @@ import java.util.List;
 
 import it.unibas.tav.iotsentinel.modello.allarme.EGravita;
 import it.unibas.tav.iotsentinel.modello.eventi.Event;
-import it.unibas.tav.iotsentinel.modello.misurazione.ETipoMisurazione;
 import it.unibas.tav.iotsentinel.modello.misurazione.Misurazione;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -30,21 +31,16 @@ public class RegolaCorrelazione implements IRegola {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String nome;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<Integer> idSensori = new ArrayList<>();
+
     @Transient
     private IRegola regolaA;
 
     @Transient
     private IRegola regolaB;
-
-    @Enumerated(EnumType.STRING)
-    private ETipoMisurazione tipoA;
-
-    private double sogliaA;
-
-    @Enumerated(EnumType.STRING)
-    private ETipoMisurazione tipoB;
-
-    private double sogliaB;
 
     private Duration finestraCorrelazione = Duration.ofSeconds(30);
 
@@ -53,20 +49,10 @@ public class RegolaCorrelazione implements IRegola {
 
     @Override
     public Event valuta(Misurazione misurazione, List<Misurazione> storicoRecente) {
-        if (misurazione == null) {
+        if (misurazione == null || regolaA == null || regolaB == null) {
             return null;
         }
-        if (regolaA != null && regolaB != null) {
-            Event eventoA = regolaA.valuta(misurazione, storicoRecente);
-            Event eventoB = regolaB.valuta(misurazione, storicoRecente);
-            if (eventoA != null && eventoB != null) {
-                return new Event(getNome() + ": " + eventoA.getDescrizione() + " e " + eventoB.getDescrizione(),
-                        Instant.now());
-            }
-        }
-        if (tipoA == null || tipoB == null) {
-            return null;
-        }
+
         List<Misurazione> candidate = new ArrayList<>();
         if (storicoRecente != null) {
             candidate.addAll(storicoRecente);
@@ -75,21 +61,37 @@ public class RegolaCorrelazione implements IRegola {
 
         Instant riferimento = misurazione.getTimestamp() == null ? Instant.now() : misurazione.getTimestamp();
         Duration finestra = finestraCorrelazione == null ? Duration.ofSeconds(30) : finestraCorrelazione;
-        boolean a = candidate.stream().anyMatch(m -> superaSogliaNellaFinestra(m, tipoA, sogliaA, riferimento, finestra));
-        boolean b = candidate.stream().anyMatch(m -> superaSogliaNellaFinestra(m, tipoB, sogliaB, riferimento, finestra));
-        if (!a || !b) {
-            return null;
+
+        Event eventoA = null;
+        Event eventoB = null;
+
+        for (Misurazione m : candidate) {
+            Instant timestamp = m.getTimestamp() == null ? riferimento : m.getTimestamp();
+            if (!timestamp.isBefore(riferimento.minus(finestra)) && !timestamp.isAfter(riferimento.plus(finestra))) {
+                if (eventoA == null) {
+                    eventoA = regolaA.valuta(m, storicoRecente);
+                }
+                if (eventoB == null) {
+                    eventoB = regolaB.valuta(m, storicoRecente);
+                }
+            }
         }
-        return new Event(getNome() + ": correlate " + tipoA + ">" + sogliaA + " e " + tipoB + ">" + sogliaB,
-                Instant.now());
+
+        if (eventoA != null && eventoB != null) {
+            return new Event(getNome() + ": " + eventoA.getDescrizione() + " e " + eventoB.getDescrizione(),
+                    Instant.now());
+        }
+
+        return null;
     }
 
-    private boolean superaSogliaNellaFinestra(Misurazione misurazione, ETipoMisurazione tipo, double soglia,
-            Instant riferimento, Duration finestra) {
-        if (misurazione == null || misurazione.getTipoMisurazione() != tipo || misurazione.getValore() <= soglia) {
-            return false;
+    @Override
+    public String getNome() {
+        if (nome != null && !nome.isBlank()) {
+            return nome;
         }
-        Instant timestamp = misurazione.getTimestamp() == null ? riferimento : misurazione.getTimestamp();
-        return !timestamp.isBefore(riferimento.minus(finestra)) && !timestamp.isAfter(riferimento.plus(finestra));
+        String nomeA = regolaA != null ? regolaA.getNome() : "A";
+        String nomeB = regolaB != null ? regolaB.getNome() : "B";
+        return "Correlazione " + nomeA + "-" + nomeB;
     }
 }

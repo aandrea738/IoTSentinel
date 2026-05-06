@@ -35,5 +35,8 @@ public abstract class SensoreBase implements ISensore {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @jakarta.persistence.Column(unique = true)
+    private String seriale;
+
     private EStatoSensore stato;
 }

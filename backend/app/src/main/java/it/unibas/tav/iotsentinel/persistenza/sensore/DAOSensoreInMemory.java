@@ -23,6 +23,15 @@ public class DAOSensoreInMemory implements IDAOSensore {
     }
 
     @Override
+    public SensoreBase findBySeriale(String seriale) throws DAOException {
+        if (seriale == null) return null;
+        return sensori.stream()
+                .filter(s -> seriale.equals(s.getSeriale()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
     public List<SensoreBase> findAll() throws DAOException {
         return new ArrayList<>(sensori);
     }
