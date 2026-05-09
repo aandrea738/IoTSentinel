@@ -52,6 +52,7 @@ public class IoTSentinelFacade {
         motoreAnalisi.setRegole(new CopyOnWriteArrayList<>(daoRegole.findAll()));
     }
 
+    @Transactional
     public SensoreBase addSensor(SensoreBase sensore) throws DAOException {
         if (sensore != null) {
             if (sensore.getSeriale() != null && !sensore.getSeriale().isBlank()) {
@@ -67,6 +68,7 @@ public class IoTSentinelFacade {
         return daoSensore.makePersistent(sensore);
     }
 
+    @Transactional
     public void removeSensor(long id) throws DAOException {
         SensoreBase sensore = daoSensore.findById(id);
         if (sensore != null) {
@@ -76,6 +78,10 @@ public class IoTSentinelFacade {
 
     public List<SensoreBase> getSensori() throws DAOException {
         return daoSensore.findAll();
+    }
+
+    public List<SensoreBase> getSensoriPaginate(int page, int size, String seriale) throws DAOException {
+        return daoSensore.findPaginated(page, size, seriale);
     }
 
     public SensoreBase getSensore(long id) throws DAOException {
@@ -126,6 +132,10 @@ public class IoTSentinelFacade {
 
     public List<IRegola> getRegole() {
         return new ArrayList<>(motoreAnalisi.getRegole());
+    }
+
+    public List<IRegola> getRegolePaginate(int page, int size, String nome) {
+        return daoRegole.findPaginated(page, size, nome);
     }
 
     public void removeRule(int index) {

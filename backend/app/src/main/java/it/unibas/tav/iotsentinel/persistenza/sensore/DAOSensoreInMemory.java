@@ -37,6 +37,23 @@ public class DAOSensoreInMemory implements IDAOSensore {
     }
 
     @Override
+    public List<SensoreBase> findPaginated(int page, int size, String seriale) throws DAOException {
+        List<SensoreBase> all = findAll();
+        if (seriale != null && !seriale.isBlank()) {
+            String search = seriale.toLowerCase();
+            all = all.stream()
+                    .filter(s -> s.getSeriale() != null && s.getSeriale().toLowerCase().contains(search))
+                    .toList();
+        }
+        int start = page * size;
+        if (start >= all.size()) {
+            return new java.util.ArrayList<>();
+        }
+        int end = Math.min(start + size, all.size());
+        return all.subList(start, end);
+    }
+
+    @Override
     public SensoreBase makePersistent(SensoreBase entity) throws DAOException {
         if (entity == null) return null;
         if (entity.getId() == 0) {

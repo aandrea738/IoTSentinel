@@ -1,0 +1,82 @@
+.inline-form {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px dashed var(--line);
+  background: rgba(0, 0, 0, 0.02);
+
+  input, select {
+    padding: 6px;
+    font-size: 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    border-radius: 4px;
+  }
+}
+
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  align-content: start;
+  gap: 12px;
+  padding: 4px;
+}
+
+.sensor-item {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideUpFade 0.5s both;
+  background: transparent;
+
+  &.selected {
+    background: rgba(59, 130, 246, 0.08);
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+  }
+
+  &:hover:not(.selected) {
+    transform: translateY(-2px);
+    background: rgba(128, 128, 128, 0.03);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+
+  .sensor-type {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sensor-serial {
+    font-size: 13px;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+
+  .alarm-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--accent-danger);
+    color: white;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 2px 4px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+  }
+}

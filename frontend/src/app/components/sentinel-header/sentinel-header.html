@@ -1,0 +1,22 @@
+<header class="hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Smart Infrastructure Monitoring</p>
+    <h1>IoT Sentinel</h1>
+  </div>
+
+  <div class="hero-actions">
+    <span class="connection" [class.offline]="!backendOnline()">
+      <span class="dot"></span>
+      {{ backendOnline() ? 'System active' : 'Link lost' }}
+    </span>
+    <button type="button" class="btn-pill" (click)="refresh.emit()">
+      Aggiorna
+    </button>
+  </div>
+</header>
+
+@if (lastError()) {
+  <section class="notice" role="alert">
+    Error: {{ lastError() }}
+  </section>
+}

@@ -1,0 +1,26 @@
+.kpi {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4px;
+
+  .label {
+    font-size: 13px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .value {
+    font-size: 24px;
+    line-height: 1;
+
+    &.high { color: var(--accent-danger); }
+    &.medium { color: var(--accent-warning); }
+    &.low { color: var(--accent-success); }
+    &.mono {
+      font-family: var(--font-data);
+      font-size: 20px;
+      letter-spacing: -0.5px;
+    }
+  }
+}

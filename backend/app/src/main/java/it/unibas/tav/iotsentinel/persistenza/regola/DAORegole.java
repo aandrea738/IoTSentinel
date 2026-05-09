@@ -11,4 +11,6 @@ public interface DAORegole {
     void makeTransient(IRegola regola);
 
     List<IRegola> findAll();
+
+    List<IRegola> findPaginated(int page, int size, String nome);
 }

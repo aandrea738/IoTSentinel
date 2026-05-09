@@ -1,0 +1,38 @@
+.alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  article {
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: rgba(239, 68, 68, 0.02);
+    position: relative;
+    animation: slideUpFade 0.5s both;
+
+    span.badge {
+      font-size: 10px;
+      font-weight: 900 !important;
+      text-transform: uppercase;
+      display: inline-block;
+
+      &.alta { color: var(--accent-danger) !important; }
+      &.media { color: var(--accent-warning) !important; }
+      &.bassa { color: var(--accent-success) !important; }
+    }
+
+    .timestamp {
+      font-size: 10px;
+      color: var(--muted);
+      font-family: var(--font-data);
+    }
+
+    .description {
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+    }
+  }
+}

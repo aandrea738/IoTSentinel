@@ -1,0 +1,39 @@
+.pagination-controls {
+  display: flex;
+  gap: 4px;
+
+  button {
+    padding: 2px 8px;
+    font-size: 11px;
+  }
+}
+
+table {
+  font-size: 12px;
+
+  tr {
+    animation: slideUpFade 0.4s both;
+  }
+
+  .col-time {
+    font-family: var(--font-data);
+    color: var(--muted);
+  }
+
+  .col-source {
+    font-weight: 700;
+  }
+
+  .col-value {
+    font-family: var(--font-data);
+    font-weight: 800;
+    color: var(--accent);
+
+    .unit {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--muted);
+      margin-left: 2px;
+    }
+  }
+}

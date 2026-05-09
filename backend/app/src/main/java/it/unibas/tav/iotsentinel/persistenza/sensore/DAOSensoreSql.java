@@ -51,6 +51,26 @@ public class DAOSensoreSql implements IDAOSensore {
     }
 
     @Override
+    public List<SensoreBase> findPaginated(int page, int size, String seriale) throws DAOException {
+        try {
+            String q = "SELECT s FROM SensoreBase s";
+            if (seriale != null && !seriale.isBlank()) {
+                q += " WHERE LOWER(s.seriale) LIKE :seriale";
+            }
+            var query = em.createQuery(q, SensoreBase.class)
+                    .setFirstResult(page * size)
+                    .setMaxResults(size);
+            if (seriale != null && !seriale.isBlank()) {
+                query.setParameter("seriale", "%" + seriale.toLowerCase() + "%");
+            }
+            return query.getResultList();
+        } catch (Exception ex) {
+            log.error("Error finding paginated sensors", ex);
+            throw new DAOException(ex);
+        }
+    }
+
+    @Override
     @Transactional
     public SensoreBase makePersistent(SensoreBase entity) throws DAOException {
         try {

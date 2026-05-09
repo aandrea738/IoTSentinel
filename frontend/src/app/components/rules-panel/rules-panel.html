@@ -1,0 +1,134 @@
+@if (!showForm()) {
+  <div style="margin-bottom: 12px;">
+    <input 
+      type="text" 
+      [value]="search()" 
+      (input)="onSearch($event)" 
+      placeholder="Cerca regola" 
+      style="width: 100%; font-size: 13px; padding: 10px 20px; border-radius: 24px; border: 1px solid var(--line); background: var(--bg-panel); backdrop-filter: var(--blur); color: var(--ink); box-shadow: var(--shadow);"
+    />
+  </div>
+}
+
+<section class="panel" style="overflow-y: auto;">
+  <div class="panel-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h2 style="margin: 0;">REGOLE</h2>
+      </div>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        @if (!showForm()) {
+          <button (click)="prevPage()" [disabled]="page() === 0" class="btn-pill" style="padding: 2px 8px;">&larr;</button>
+          <span style="font-size: 11px; font-weight: bold; color: var(--ink); min-width: 16px; text-align: center;">{{ page() + 1 }}</span>
+          <button (click)="nextPage()" [disabled]="regole().length < size()" class="btn-pill" style="padding: 2px 8px;">&rarr;</button>
+        }
+        <button (click)="toggleForm()" class="btn-pill">
+          {{ showForm() ? 'Chiudi' : 'Aggiungi' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (showForm()) {
+    <form class="rule-form" (ngSubmit)="submit()">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <select name="rt" [(ngModel)]="selectedRuleType" (change)="onRuleTypeChange()">
+          @for (rt of ruleTypes; track rt) { <option [value]="rt">{{ rt }}</option> }
+        </select>
+        <input name="rn" type="text" [(ngModel)]="nomeRegola" placeholder="Nome Regola" required />
+      </div>
+      
+      <div class="sensor-selector">
+        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+          @for (s of filteredSensors(); track s.id) {
+            <div 
+              class="chip" 
+              [class.selected]="targetSensorIds().includes(s.id)" 
+              (click)="toggleSensor(s.id)" 
+              [title]="s.tipo"
+            >
+              {{ s.seriale }}
+            </div>
+          }
+
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid var(--line);">
+        @if (selectedRuleType === 'SOGLIA' || selectedRuleType === 'TEMPORALE') {
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <select name="tm" [(ngModel)]="tipoMisurazione" (change)="onTipoChange()">
+              @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
+            </select>
+            <input type="number" name="soglia" [(ngModel)]="soglia" placeholder="Soglia" required />
+          </div>
+        }
+        @if (selectedRuleType === 'TEMPORALE') {
+          <input type="number" name="durata" [(ngModel)]="durataMinimaSecondi" placeholder="Durata (sec)" required />
+        }
+        @if (selectedRuleType === 'CORRELAZIONE') {
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div style="font-size: 11px; font-weight: bold; color: var(--muted);">Sottoregola A</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <select name="tra" [(ngModel)]="tipoRegolaA">
+                <option value="SOGLIA">Soglia</option>
+                <option value="TEMPORALE">Temporale</option>
+              </select>
+              <select name="ta" [(ngModel)]="tipoA">
+                @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
+              </select>
+              <input type="number" name="sa" [(ngModel)]="sogliaA" placeholder="Soglia A" required />
+              @if (tipoRegolaA === 'TEMPORALE') {
+                <input type="number" name="da" [(ngModel)]="durataA" placeholder="Durata A (sec)" required />
+              }
+            </div>
+            
+            <div style="font-size: 11px; font-weight: bold; color: var(--muted);">Sottoregola B</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <select name="trb" [(ngModel)]="tipoRegolaB">
+                <option value="SOGLIA">Soglia</option>
+                <option value="TEMPORALE">Temporale</option>
+              </select>
+              <select name="tb" [(ngModel)]="tipoB">
+                @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
+              </select>
+              <input type="number" name="sb" [(ngModel)]="sogliaB" placeholder="Soglia B" required />
+              @if (tipoRegolaB === 'TEMPORALE') {
+                <input type="number" name="db" [(ngModel)]="durataB" placeholder="Durata B (sec)" required />
+              }
+            </div>
+            <input type="number" name="finestra" [(ngModel)]="finestraCorrelazioneSecondi" placeholder="Finestra (sec)" required />
+          </div>
+        }
+        <select name="gravita" [(ngModel)]="gravita">
+          <option value="BASSA">Bassa</option>
+          <option value="MEDIA">Media</option>
+          <option value="ALTA">Alta</option>
+        </select>
+      </div>
+
+      <button type="submit" class="btn-pill-accent" style="align-self: flex-end;" [disabled]="targetSensorIds().length === 0 || !nomeRegola.trim()">
+        Applica
+      </button>
+    </form>
+  } @else {
+    <div class="rule-list">
+      @for (r of filteredRegole(); track r.id; let idx = $index) {
+        <article [style.animation-delay]="(idx * 0.05) + 's'">
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
+              <span class="badge" [class]="r.gravita">{{ r.gravita.substring(0,1) }}</span>
+              <span class="rule-name">{{ r.nome }}</span>
+            </div>
+            <div class="rule-meta">
+              {{ r.tipo }} ({{ r.idSensori?.length || 'TUTTI' }})
+            </div>
+          </div>
+          <button (click)="remove(r)" class="btn-remove" title="Elimina Regola">×</button>
+        </article>
+      } @empty {
+        <p style="text-align: center; color: var(--muted); font-size: 12px; padding: 20px;">NESSUNA REGOLA</p>
+      }
+    </div>
+  }
+</section>

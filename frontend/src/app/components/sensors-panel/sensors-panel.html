@@ -1,0 +1,104 @@
+@if (!showAdd) {
+  <div style="margin-bottom: 12px;">
+    <input 
+      type="text" 
+      [value]="search()" 
+      (input)="onSearch($event)" 
+      placeholder="Cerca sensore" 
+      style="width: 100%; font-size: 13px; padding: 10px 20px; border-radius: 24px; border: 1px solid var(--line); background: var(--bg-panel); backdrop-filter: var(--blur); color: var(--ink); box-shadow: var(--shadow);"
+    />
+  </div>
+}
+
+<section class="panel">
+  <div class="panel-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <h2 style="font-size: 16px; margin: 0">SENSORI</h2>
+      </div>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        @if (!showAdd) {
+          <button (click)="prevPage()" [disabled]="page() === 0" class="btn-pill" style="padding: 2px 8px;">&larr;</button>
+          <span style="font-size: 11px; font-weight: bold; color: var(--ink); min-width: 16px; text-align: center;">{{ page() + 1 }}</span>
+          <button (click)="nextPage()" [disabled]="sensori().length < size()" class="btn-pill" style="padding: 2px 8px;">&rarr;</button>
+        }
+        <button
+          (click)="$event.stopPropagation(); showAdd = !showAdd"
+          class="btn-pill"
+        >
+          {{ showAdd ? 'Chiudi' : 'Aggiungi' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  @if (showAdd) {
+    <form class="inline-form" (ngSubmit)="submit()">
+      <input
+        type="text"
+        name="seriale"
+        [(ngModel)]="newSerial"
+        placeholder="Seriale"
+        required
+      />
+      <input
+        type="text"
+        name="unitaDiMisura"
+        [(ngModel)]="newUnit"
+        placeholder="Unità di misura (es. °C, %)"
+      />
+      <select name="tipoSensore" [(ngModel)]="selectedType">
+        @for (tipo of sensorTypes; track tipo) {
+          <option [value]="tipo">{{ tipo }}</option>
+        }
+      </select>
+      <button
+        type="submit"
+        [disabled]="!newSerial.trim()"
+        class="btn-pill-accent"
+      >
+        Applica
+      </button>
+    </form>
+  }
+
+  <div class="sensor-grid">
+    @for (sensore of sensori(); track sensore.id; let idx = $index) {
+      <div
+        class="sensor-item"
+        [class.selected]="sensore.id === selectedSensorId()"
+        (click)="onSensorClick(sensore.id); $event.stopPropagation()"
+        [style.animation-delay]="idx * 0.05 + 's'"
+      >
+        <div style="display: flex; align-items: center; gap: 6px">
+          <div
+            class="status-dot"
+            [style.background]="
+              sensore.stato === 'ATTIVO'
+                ? 'var(--accent-success)'
+                : sensore.stato === 'ERRORE'
+                  ? 'var(--accent-danger)'
+                  : 'var(--accent-warning)'
+            "
+          ></div>
+          <span class="sensor-type">{{ sensore.tipo }}</span>
+        </div>
+
+        <div class="sensor-serial">
+          {{ sensore.seriale || '#' + sensore.id }}
+        </div>
+
+        @if (alarmCount(sensore.id) > 0) {
+          <div class="alarm-badge">
+            {{ alarmCount(sensore.id) }}
+          </div>
+        }
+      </div>
+    } @empty {
+      <p style="grid-column: 1/-1; text-align: center; color: var(--muted); font-size: 12px; padding: 20px;">
+        NESSUN DATO
+      </p>
+    }
+  </div>
+</section>

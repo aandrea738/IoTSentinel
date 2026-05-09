@@ -1,0 +1,58 @@
+<main class="shell">
+  <app-sentinel-header
+    [backendOnline]="backendOnline()"
+    [lastError]="lastError()"
+    (refresh)="loadDashboard()"
+  />
+
+  <app-kpi-strip 
+    [sensoriAttivi]="sensoriAttivi()" 
+    [allarmiAlta]="allarmiAlta()" 
+    [allarmiMedia]="allarmiMedia()"
+    [allarmiBassa]="allarmiBassa()"
+    [ultimoAggiornamento]="ultimoAggiornamento()" 
+  />
+  <section class="workspace" (click)="selectedSensorId.set(null); $event.stopPropagation()">
+    <app-sensors-panel
+      [sensori]="sensori()"
+      [allarmi]="allarmi()"
+      [selectedSensorId]="selectedSensorId()"
+      [page]="sensorPage()"
+      [size]="sensorPageSize"
+      [search]="sensorSearch()"
+      (pageChange)="onSensorPageChange($event)"
+      (searchChange)="onSensorSearch($event)"
+      (createSensor)="addSensore($event)"
+      (selectSensor)="selectedSensorId.set($event || null)"
+    />
+
+    <app-telemetry-panel 
+      [sensori]="sensoriLookup()" 
+      [telemetrie]="telemetrie()"
+      [allarmi]="allarmi()"
+      [page]="telemetryPage()"
+      [size]="telemetryPageSize"
+      [alarmPage]="alarmPage()"
+      (pageChange)="onTelemetryPageChange($event)"
+      (alarmPageChange)="onAlarmPageChange($event)"
+    />
+
+    <div style="display: flex; flex-direction: column; gap: 20px; min-height: 0;">
+      <app-rules-panel
+        [regole]="regole()"
+        [sensori]="sensori()"
+        [selectedSensorId]="selectedSensorId()"
+        [page]="rulePage()"
+        [size]="rulePageSize"
+        [search]="ruleSearch()"
+        (pageChange)="onRulePageChange($event)"
+        (searchChange)="onRuleSearch($event)"
+        (createThresholdRule)="addThresholdRule($event)"
+        (createTemporalRule)="addTemporalRule($event)"
+        (createCorrelationRule)="addCorrelationRule($event)"
+        (removeRule)="removeRule($event)"
+        style="display: flex; flex-direction: column; flex: 1; min-height: 0;"
+      />
+    </div>
+  </section>
+</main>

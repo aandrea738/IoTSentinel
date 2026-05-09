@@ -55,6 +55,23 @@ public class DAORegoleSql implements DAORegole {
         return regole;
     }
 
+    @Override
+    public List<IRegola> findPaginated(int page, int size, String nome) {
+        List<IRegola> all = findAll();
+        if (nome != null && !nome.isBlank()) {
+            String search = nome.toLowerCase();
+            all = all.stream()
+                    .filter(r -> r.getNome() != null && r.getNome().toLowerCase().contains(search))
+                    .toList();
+        }
+        int start = page * size;
+        if (start >= all.size()) {
+            return new ArrayList<>();
+        }
+        int end = Math.min(start + size, all.size());
+        return all.subList(start, end);
+    }
+
     private boolean isNuova(IRegola regola) {
         return idRegola(regola) == 0;
     }
