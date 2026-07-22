@@ -5,7 +5,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,7 +78,7 @@ public class SimulatoreRunner implements QuarkusApplication {
                 // Scegli sensore a caso (1-4)
                 int idSensore = random.nextInt(4) + 1;
                 ETipoMisurazione tipo = tipi[random.nextInt(tipi.length)];
-                
+
                 boolean isError = random.nextDouble() < errorRate;
                 double valore = generaValore(tipo, isError);
 
@@ -114,7 +113,12 @@ public class SimulatoreRunner implements QuarkusApplication {
                 break;
             } catch (Exception e) {
                 System.out.printf("[%s] Errore: %s%n", Thread.currentThread().getName(), e.getMessage());
-                try { Thread.sleep(1000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); break; }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
             }
         }
     }
