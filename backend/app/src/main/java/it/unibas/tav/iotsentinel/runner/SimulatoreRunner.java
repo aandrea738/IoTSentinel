@@ -32,6 +32,10 @@ public class SimulatoreRunner implements QuarkusApplication {
         double errorRate = 0.1;
         long delayMs = 500;
 
+        if (args.length == 1 && args[0].contains(" ")) {
+            args = args[0].split("\\s+");
+        }
+
         for (String arg : args) {
             if (arg.startsWith("--threads=")) {
                 threads = Integer.parseInt(arg.substring(10));
@@ -75,9 +79,21 @@ public class SimulatoreRunner implements QuarkusApplication {
 
         while (running.get()) {
             try {
-                // Scegli sensore a caso (1-4)
-                int idSensore = random.nextInt(4) + 1;
-                ETipoMisurazione tipo = tipi[random.nextInt(tipi.length)];
+                // Scegli sensore a caso garantendo la coerenza del tipo
+                int idSensore;
+                ETipoMisurazione tipo;
+
+                int rnd = random.nextInt(3);
+                if (rnd == 0) {
+                    idSensore = random.nextBoolean() ? 1 : 2;
+                    tipo = ETipoMisurazione.TEMPERATURA;
+                } else if (rnd == 1) {
+                    idSensore = random.nextBoolean() ? 3 : 4;
+                    tipo = ETipoMisurazione.PRESSIONE;
+                } else {
+                    idSensore = random.nextBoolean() ? 7 : 8;
+                    tipo = ETipoMisurazione.CO2;
+                }
 
                 boolean isError = random.nextDouble() < errorRate;
                 double valore = generaValore(tipo, isError);

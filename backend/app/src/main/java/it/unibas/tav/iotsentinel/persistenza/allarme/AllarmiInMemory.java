@@ -19,7 +19,20 @@ public class AllarmiInMemory implements DAOAllarmi {
     private List<Allarme> allarmi = new ArrayList<>();
 
     @Override
-    public Allarme findById(int id) {
+    public Allarme makePersistent(Allarme allarme) {
+        if (allarme != null && !allarmi.contains(allarme)) {
+            allarmi.add(allarme);
+        }
+        return allarme;
+    }
+
+    @Override
+    public void makeTransient(Allarme allarme) {
+        allarmi.remove(allarme);
+    }
+
+    @Override
+    public Allarme findById(Long id) {
         return allarmi.stream()
                 .filter(a -> a.getId() == id)
                 .findFirst()

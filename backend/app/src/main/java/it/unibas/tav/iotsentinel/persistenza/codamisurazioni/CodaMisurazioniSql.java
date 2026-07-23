@@ -5,9 +5,9 @@ import java.util.List;
 import it.unibas.tav.iotsentinel.modello.misurazione.Misurazione;
 import it.unibas.tav.iotsentinel.persistenza.IDAOGenerico;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -63,22 +63,20 @@ public class CodaMisurazioniSql implements IDAOGenerico<Misurazione>, ICodaMisur
     @Override
     @Transactional
     public Misurazione pop() {
-        // Use a lock if necessary, but for now just get the first and delete it
         List<Misurazione> misurazioni = entityManager.createQuery(
                 "SELECT m FROM Misurazione m ORDER BY m.timestamp ASC", Misurazione.class)
                 .setMaxResults(1)
                 .getResultList();
-        
+
         if (misurazioni.isEmpty()) {
             return null;
         }
-        
+
         Misurazione m = misurazioni.get(0);
-        // We delete by ID directly to be more robust against OptimisticLockException
         int deleted = entityManager.createQuery("DELETE FROM Misurazione WHERE id = :id")
                 .setParameter("id", m.getId())
                 .executeUpdate();
-        
+
         if (deleted > 0) {
             log.debug("Popped and deleted misurazione ID: {}", m.getId());
             return m;
@@ -102,16 +100,16 @@ public class CodaMisurazioniSql implements IDAOGenerico<Misurazione>, ICodaMisur
                 "SELECT m FROM Misurazione m ORDER BY m.timestamp ASC", Misurazione.class)
                 .setMaxResults(maxResults)
                 .getResultList();
-        
+
         if (batch.isEmpty()) {
             return batch;
         }
-        
+
         List<Long> ids = batch.stream().map(Misurazione::getId).toList();
         int deleted = entityManager.createQuery("DELETE FROM Misurazione m WHERE m.id IN :ids")
                 .setParameter("ids", ids)
                 .executeUpdate();
-        
+
         log.debug("Popped and deleted {} misurazioni", deleted);
         return batch;
     }

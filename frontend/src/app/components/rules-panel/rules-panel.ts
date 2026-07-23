@@ -245,4 +245,17 @@ export class RulesPanel implements OnDestroy {
   onSearch(event: any): void {
     this.searchSubject.next(event.target.value);
   }
+
+  getRuleDescription(r: RegolaResponse): string {
+    if (r.tipo === 'SOGLIA') {
+      return `Se ${r.tipoMisurazione} > ${r.soglia}`;
+    } else if (r.tipo === 'TEMPORALE') {
+      return `Se ${r.tipoMisurazione} > ${r.soglia} per ${r.durataMinimaSecondi}s`;
+    } else if (r.tipo === 'CORRELAZIONE') {
+      const descA = r.regolaA ? this.getRuleDescription(r.regolaA) : '?';
+      const descB = r.regolaB ? this.getRuleDescription(r.regolaB) : '?';
+      return `(${descA}) E (${descB}) entro ${r.finestraCorrelazioneSecondi}s`;
+    }
+    return '';
+  }
 }

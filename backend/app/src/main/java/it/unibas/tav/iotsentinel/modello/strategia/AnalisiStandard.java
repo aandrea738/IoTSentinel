@@ -25,6 +25,11 @@ public class AnalisiStandard implements IStrategiaAnalisi {
     private List<Misurazione> storicoRecente = new ArrayList<>();
     private Duration finestraStorico = Duration.ofHours(24);
 
+    /**
+     * Valuta una nuova misurazione rispetto alle regole definite.
+     * Mantiene traccia dello storico recente e, se una regola viene violata,
+     * genera e restituisce un nuovo Allarme.
+     */
     @Override
     public Allarme valuta(Misurazione misurazione) {
         if (strategia != null) {
@@ -53,6 +58,10 @@ public class AnalisiStandard implements IStrategiaAnalisi {
         return null;
     }
 
+    /**
+     * Rimuove dallo storico le misurazioni più vecchie della finestra temporale
+     * configurata (finestraStorico), calcolata a partire dall'istante di riferimento.
+     */
     private void compattaStorico(Instant riferimento) {
         if (finestraStorico == null) return;
         Instant soglia = riferimento.minus(finestraStorico);

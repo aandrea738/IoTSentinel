@@ -7,7 +7,12 @@
     @for (a of allarmi(); track a.id; let idx = $index) {
       <article [style.animation-delay]="(idx * 0.05) + 's'">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <span class="badge" [ngClass]="statusClass(a.gravita)">{{ a.gravita }}</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge" [ngClass]="statusClass(a.gravita)">{{ a.gravita }}</span>
+            @if (a.occorrenze > 0) {
+              <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: var(--muted);">x{{ a.occorrenze }}</span>
+            }
+          </div>
           <span class="timestamp">{{ formatTime(a.timestampInizio) }}</span>
         </div>
         <p class="description">{{ a.descrizione }}</p>

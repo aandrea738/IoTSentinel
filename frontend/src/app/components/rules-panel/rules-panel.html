@@ -32,13 +32,20 @@
   @if (showForm()) {
     <form class="rule-form" (ngSubmit)="submit()">
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <select name="rt" [(ngModel)]="selectedRuleType" (change)="onRuleTypeChange()">
-          @for (rt of ruleTypes; track rt) { <option [value]="rt">{{ rt }}</option> }
-        </select>
-        <input name="rn" type="text" [(ngModel)]="nomeRegola" placeholder="Nome Regola" required />
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Tipo Regola</label>
+          <select name="rt" [(ngModel)]="selectedRuleType" (change)="onRuleTypeChange()">
+            @for (rt of ruleTypes; track rt) { <option [value]="rt">{{ rt }}</option> }
+          </select>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Nome Regola</label>
+          <input name="rn" type="text" [(ngModel)]="nomeRegola" placeholder="Es. Allarme Pressione" required />
+        </div>
       </div>
       
       <div class="sensor-selector">
+        <label style="font-size: 11px; font-weight: 600; color: var(--muted); display: block; margin-bottom: 4px;">Sensori Target</label>
         <div style="display: flex; flex-wrap: wrap; gap: 4px;">
           @for (s of filteredSensors(); track s.id) {
             <div 
@@ -57,54 +64,94 @@
       <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 8px; border-top: 1px solid var(--line);">
         @if (selectedRuleType === 'SOGLIA' || selectedRuleType === 'TEMPORALE') {
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <select name="tm" [(ngModel)]="tipoMisurazione" (change)="onTipoChange()">
-              @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
-            </select>
-            <input type="number" name="soglia" [(ngModel)]="soglia" placeholder="Soglia" required />
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Misurazione</label>
+              <select name="tm" [(ngModel)]="tipoMisurazione" (change)="onTipoChange()">
+                @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
+              </select>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+              <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Soglia</label>
+              <input type="number" name="soglia" [(ngModel)]="soglia" placeholder="Valore limite" required />
+            </div>
           </div>
         }
         @if (selectedRuleType === 'TEMPORALE') {
-          <input type="number" name="durata" [(ngModel)]="durataMinimaSecondi" placeholder="Durata (sec)" required />
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Durata Minima (secondi)</label>
+            <input type="number" name="durata" [(ngModel)]="durataMinimaSecondi" placeholder="Tempo oltre soglia" required />
+          </div>
         }
         @if (selectedRuleType === 'CORRELAZIONE') {
           <div style="display: flex; flex-direction: column; gap: 8px;">
             <div style="font-size: 11px; font-weight: bold; color: var(--muted);">Sottoregola A</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <select name="tra" [(ngModel)]="tipoRegolaA">
-                <option value="SOGLIA">Soglia</option>
-                <option value="TEMPORALE">Temporale</option>
-              </select>
-              <select name="ta" [(ngModel)]="tipoA">
-                @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
-              </select>
-              <input type="number" name="sa" [(ngModel)]="sogliaA" placeholder="Soglia A" required />
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Tipo</label>
+                <select name="tra" [(ngModel)]="tipoRegolaA">
+                  <option value="SOGLIA">Soglia</option>
+                  <option value="TEMPORALE">Temporale</option>
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Misurazione</label>
+                <select name="ta" [(ngModel)]="tipoA">
+                  @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Soglia</label>
+                <input type="number" name="sa" [(ngModel)]="sogliaA" required />
+              </div>
               @if (tipoRegolaA === 'TEMPORALE') {
-                <input type="number" name="da" [(ngModel)]="durataA" placeholder="Durata A (sec)" required />
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Durata (s)</label>
+                  <input type="number" name="da" [(ngModel)]="durataA" required />
+                </div>
               }
             </div>
             
-            <div style="font-size: 11px; font-weight: bold; color: var(--muted);">Sottoregola B</div>
+            <div style="font-size: 11px; font-weight: bold; color: var(--muted); margin-top: 4px;">Sottoregola B</div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-              <select name="trb" [(ngModel)]="tipoRegolaB">
-                <option value="SOGLIA">Soglia</option>
-                <option value="TEMPORALE">Temporale</option>
-              </select>
-              <select name="tb" [(ngModel)]="tipoB">
-                @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
-              </select>
-              <input type="number" name="sb" [(ngModel)]="sogliaB" placeholder="Soglia B" required />
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Tipo</label>
+                <select name="trb" [(ngModel)]="tipoRegolaB">
+                  <option value="SOGLIA">Soglia</option>
+                  <option value="TEMPORALE">Temporale</option>
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Misurazione</label>
+                <select name="tb" [(ngModel)]="tipoB">
+                  @for (st of sensorTypes; track st) { <option [value]="st">{{ st }}</option> }
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px;">
+                <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Soglia</label>
+                <input type="number" name="sb" [(ngModel)]="sogliaB" required />
+              </div>
               @if (tipoRegolaB === 'TEMPORALE') {
-                <input type="number" name="db" [(ngModel)]="durataB" placeholder="Durata B (sec)" required />
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                  <label style="font-size: 10px; font-weight: 600; color: var(--muted);">Durata (s)</label>
+                  <input type="number" name="db" [(ngModel)]="durataB" required />
+                </div>
               }
             </div>
-            <input type="number" name="finestra" [(ngModel)]="finestraCorrelazioneSecondi" placeholder="Finestra (sec)" required />
+            
+            <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+              <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Finestra di Correlazione (secondi)</label>
+              <input type="number" name="finestra" [(ngModel)]="finestraCorrelazioneSecondi" required />
+            </div>
           </div>
         }
-        <select name="gravita" [(ngModel)]="gravita">
-          <option value="BASSA">Bassa</option>
-          <option value="MEDIA">Media</option>
-          <option value="ALTA">Alta</option>
-        </select>
+        <div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+          <label style="font-size: 11px; font-weight: 600; color: var(--muted);">Gravità Allarme</label>
+          <select name="gravita" [(ngModel)]="gravita">
+            <option value="BASSA">Bassa</option>
+            <option value="MEDIA">Media</option>
+            <option value="ALTA">Alta</option>
+          </select>
+        </div>
       </div>
 
       <button type="submit" class="btn-pill-accent" style="align-self: flex-end;" [disabled]="targetSensorIds().length === 0 || !nomeRegola.trim()">
@@ -120,8 +167,11 @@
               <span class="badge" [class]="r.gravita">{{ r.gravita.substring(0,1) }}</span>
               <span class="rule-name">{{ r.nome }}</span>
             </div>
-            <div class="rule-meta">
+            <div class="rule-meta" style="margin-bottom: 4px;">
               {{ r.tipo }} ({{ r.idSensori?.length || 'TUTTI' }})
+            </div>
+            <div style="font-size: 11px; color: var(--text-color); background: rgba(255, 255, 255, 0.05); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--line);">
+              {{ getRuleDescription(r) }}
             </div>
           </div>
           <button (click)="remove(r)" class="btn-remove" title="Elimina Regola">×</button>

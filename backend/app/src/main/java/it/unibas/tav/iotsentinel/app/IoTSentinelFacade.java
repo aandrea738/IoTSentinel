@@ -50,6 +50,7 @@ public class IoTSentinelFacade {
     void init() {
         observerInstances.forEach(this::addObserver);
         motoreAnalisi.setRegole(new CopyOnWriteArrayList<>(daoRegole.findAll()));
+        motoreAnalisi.setOnAllarmeRevocato(allarme -> observers.forEach(observer -> observer.onAlarmRevoked(allarme)));
     }
 
     @Transactional
@@ -100,25 +101,26 @@ public class IoTSentinelFacade {
         if (misurazione.getTimestamp() == null) {
             misurazione.setTimestamp(Instant.now());
         }
-        log.info("Acquiring telemetry for sensor: {}", misurazione.getSensore() != null ? misurazione.getSensore().getSeriale() : "NULL");
-        
+        log.info("Acquiring telemetry for sensor: {}",
+                misurazione.getSensore() != null ? misurazione.getSensore().getSeriale() : "NULL");
+
         // Save history first
         Telemetria t = Telemetria.from(misurazione);
         daoTelemetrie.save(t);
         log.info("Saved telemetry to history with ID: {}", t.getId());
-        
+
         // Add to queue for processing
         codaMisurazioni.push(misurazione);
-        
+
         observers.forEach(observer -> observer.onTelemetryReceived(misurazione));
         return misurazione;
     }
 
     @Transactional
     public void process(Misurazione misurazione) throws DAOException {
-        if (misurazione == null) return;
+        if (misurazione == null)
+            return;
         Allarme allarme = motoreAnalisi.analizza(misurazione);
-        aggiornaStatoSensore(misurazione, allarme);
         if (allarme != null) {
             observers.forEach(observer -> observer.onAlarmTriggered(allarme));
         }
@@ -161,10 +163,5 @@ public class IoTSentinelFacade {
         if (observer != null) {
             observers.add(observer);
         }
-    }
-
-    private void aggiornaStatoSensore(Misurazione misurazione, Allarme allarme) throws DAOException {
-        // Sensors stay ACTIVE even if they have alarms. 
-        // Logic removed to satisfy requirement: "Un sensore, anche se in allarme rimane comunque attivo."
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import it.unibas.tav.iotsentinel.modello.allarme.Allarme;
 import it.unibas.tav.iotsentinel.modello.allarme.EStatoAllarme;
@@ -27,6 +28,7 @@ public class MotoreAnalisi {
     private List<IRegola> regole = new CopyOnWriteArrayList<>();
     private Map<Integer, Allarme> allarmiAttivi = new ConcurrentHashMap<>();
     private List<Allarme> storicoAllarmi = new CopyOnWriteArrayList<>();
+    private Consumer<Allarme> onAllarmeRevocato;
 
     public Allarme analizza(Misurazione misurazione) {
         inizializzaStrategia();
@@ -102,6 +104,9 @@ public class MotoreAnalisi {
         if (allarme != null) {
             allarme.setStato(EStatoAllarme.REVOCATO);
             allarme.setTimestampFine(java.time.Instant.now());
+            if (onAllarmeRevocato != null) {
+                onAllarmeRevocato.accept(allarme);
+            }
         }
     }
 }

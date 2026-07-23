@@ -60,6 +60,7 @@
             <th>ORA</th>
             <th>SORGENTE</th>
             <th>GRAVITÀ</th>
+            <th>OCC.</th>
             <th>DESCRIZIONE</th>
           </tr>
         </thead>
@@ -71,13 +72,14 @@
             <td>
               <span class="badge" [class]="statusClass(a.gravita)" style="font-size: 9px; padding: 1px 4px;">{{ a.gravita }}</span>
             </td>
+            <td style="font-family: var(--font-data); font-weight: 800; color: var(--accent);">{{ a.occorrenze > 0 ? a.occorrenze : 1 }}</td>
             <td style="font-weight: 600; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" [title]="a.descrizione">
               {{ a.descrizione }}
             </td>
           </tr>
           } @empty {
           <tr>
-            <td colspan="4" style="text-align: center; color: var(--muted); padding: 24px;">NESSUN ALLARME</td>
+            <td colspan="5" style="text-align: center; color: var(--muted); padding: 24px;">NESSUN ALLARME</td>
           </tr>
           }
         </tbody>

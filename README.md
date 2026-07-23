@@ -20,7 +20,6 @@
 
 ### Funzionalità mancanti (Cosa si potrebbe aggiungere in futuro)
 
-- **Comunicazione Real-Time:** Al momento il frontend effettua un polling continuo verso il backend per ricevere aggiornamenti. Questo approccio è poco efficiente; andrebbe sostituito con l'uso di WebSocket (o Server-Sent Events) in modo che sia il server a "spingere" i nuovi dati solo quando ci sono novità.
 - **Personalizzazione soglie:** Attualmente le soglie possono essere definite solo con il maggiore.
 
 ## Architettura e Design Pattern adottati
